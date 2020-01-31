@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+table, th, td {
+    border: 1px solid black;
+    border-collapse: collapse;
+}
+th, td {
+    padding: 10px;
+    text-align: center;
+}
+</style>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<script>
+	var books = [{"book_id":1,"title":"a","author":"p","price":20},
+			{"book_id":2,"title":"b","author":"q","price":30},
+			{"book_id":3,"title":"c","author":"r","price":40},
+			{"book_id":4,"title":"d","author":"s","price":10},
+			{"book_id":5,"title":"e","author":"t","price":90},
+			{"book_id":6,"title":"f","author":"u","price":110},
+			{"book_id":7,"title":"g","author":"v","price":70},
+			{"book_id":8,"title":"h","author":"x","price":50},
+			{"book_id":9,"title":"i","author":"y","price":80},
+			{"book_id":10,"title":"j","author":"z","price":60}]; 
+var book,index;
+var str="";
+var bill = [];
+var final_add =0;
+$(document).ready(function(){
+var l=1	;
+var total;
+	$("#add").click(function(){
+			$("#bill").css("display","block");
+			var record={};
+			 
+			var mul,sum=0,i;
+			for(j in books){
+				str += "<option value='"+ books[j].book_id +"'>"+books[j].title+"</option>";
+			}
+			var x = "<tr class = 'row'><td class = 'no'>" + l + "</td>";
+			x += "<td class = 'bk'><select class = 'choice'>"+str+"</select></td>";
+			x +="<td class = 'author'>p</td><td class = 'up'>20</td><td class = 'qnt'><input type = 'number' value = '1' min='1' class = 'in'></input></td><td class = 'tp'>20</td><td class = 'btn'><button class = 'remove'>Remove</button></td></tr>";
+			$("#tbl tbody").append(x);
+			
+			//record.book_t = books[0].title;
+			//record.book_a = books[0].author;
+			record.book_id = books[0].book_id;
+			record.book_up = books[0].price;
+			record.book_q = 1;
+			//record.book_tp = books[0].price;
+			bill.push(record);
+			console.log(bill);
+			l++;
+			for(i in bill){
+					mul = bill[i].book_up * bill[i].book_q;
+					sum += mul;
+				}
+			$("#total").text(sum);
+			final_add = sum;
+			str="";	
+	});
+	
+	$(document).on("change","select",function(){
+		var all=0,mul,i;
+				book = $(this).find("option:selected").val();
+				//console.log(book);
+				var t = $(this).find("option:selected").text();
+				index = $(this).parent().siblings(".no").text(); 
+				console.log(index);
+				$(this).parent().siblings(".author").text(books[book-1].author);
+				$(this).parent().siblings(".up").text(books[book-1].price);
+				$(this).parent().siblings(".qnt").find(".in").val(1);
+				var sum = $(this).parent().siblings(".tp").text(parseInt($(this).parent().siblings(".up").text()) * parseInt($(this).parent().siblings(".qnt").find(".in").val()));
+				//bill[index-1].book_t = t;
+				//bill[index-1].book_a = $(this).parent().siblings(".author").text();
+				bill[index-1].book_id = parseInt(book);
+				bill[index-1].book_up = parseInt($(this).parent().siblings(".up").text());
+				//bill[index-1].book_tp = parseInt($(this).parent().siblings(".tp").text());
+				for(i in bill){
+					mul = bill[i].book_up * bill[i].book_q;
+					all += mul;
+				}
+				$("#total").text(all);
+				final_add = all;
+				console.log(bill);
+			});
+			
+	$(document).on("keyup","input",function(){
+				var sum=0,i,mul;
+				index = parseInt($(this).parent().siblings(".no").text());
+				console.log(index);
+				var unit = parseInt($(this).parent().siblings(".up").text());
+				var quant = parseInt($(this).val());	
+				bill[index-1]["book_q"] = quant;
+				if(quant >=0){
+					total = unit * quant;
+					$(this).parent().siblings(".tp").text(total);
+					//bill[index-1]["book_tp"] = total;
+					
+				}else{
+					
+					$(this).val(1);
+					$(this).parent().siblings(".tp").text(parseInt($(this).parent().siblings(".up").text()) * parseInt($(this).val()));
+				}
+				for(i in bill){
+					mul = bill[i].book_up * bill[i].book_q;
+					sum += mul;
+				}
+				$("#total").text(sum);
+				final_add = sum;
+				console.log(bill);
+			});
+	$(document).on("click",".remove",function(){
+		var n,mul,a,t,sum=0;
+			index = parseInt($(this).parent().siblings(".no").text());	
+			console.log(index);
+			bill.splice(index-1,1);
+			console.log(bill);
+			for(y=1;y<=l;y++){
+				$(".row").remove();
+			}
+			
+			n=1;
+			
+			for(m in bill){
+				
+				mul = bill[m].book_up * bill[m].book_q;
+				for(k in books){
+					if(books[k].book_id == bill[m].book_id){
+						a = books[k].author;
+						t = books[k].title;
+						str += "<option value='"+ books[k].book_id +"' selected = 'selected'>"+books[k].title+"</option>";
+					}
+					str += "<option value='"+ books[k].book_id +"'>"+books[k].title+"</option>";
+				}
+				
+						
+		
+				var x = "<tr class='row'><td class = 'no'>" + n + "</td>";
+				x += "<td class = 'bk'><select class = 'choice'>"+str+"</select></td>";
+				x +="<td class = 'author'>"+a+"</td><td class = 'up'>"+bill[m].book_up+"</td><td class = 'qnt'><input type = 'number' value = '"+bill[m].book_q+"' min='1' class = 'in'></input></td><td class = 'tp'>"+mul+"</td><td class = 'btn'><button class = 'remove'>Remove</button></td></tr>";
+				$("#tbl tbody").append(x);
+				str = "";
+				sum += mul;
+				
+				n++;
+			}
+			l=n;
+			str = "";
+			$("#total").text(sum);
+			final_add = sum;
+	});
+	
+	$("#bill").on("click",function(){
+		var i,n,j,k;
+		var arr = [];
+		var str,str1,mul;
+		$("#tbl,#bill").hide();
+		$("#tbl1").show();
+		n=1;
+		console.log(bill);
+		if(bill.length > 1){
+			for(i in bill){
+				for(j=0; j<bill.length;j++){
+						if(i != j){
+							if(bill[i].book_id == bill[j].book_id){
+								bill[i].book_q += bill[j].book_q;
+								bill.splice(j,1);
+								j=0;
+								console.log(bill);
+							}
+						}
+				}
+				
+			
+			
+			}
+		}
+		for(k in bill){
+			var x ="";
+			
+			mul = bill[k].book_up * bill[k].book_q;
+			for(r in books){
+				if(books[r].book_id == bill[k].book_id){
+					str = books[r].title;
+					str1 = books[r].author;
+				}
+			}
+			x += "<tr><td>"+n+"</td><td>"+str+"</td><td>"+str1+"</td><td>"+bill[k].book_up+"</td><td>"+bill[k].book_q+"</td><td>"+mul+"</td></tr>";
+			$("#tbl1 tbody").append(x);
+			n++;
+			
+		}
+		$("#total").text(final_add);
+		console.log(bill);
+		
+	});
+	
+});
+
+</script>
+</head>
+<body>
+<p><b> Data: </b></p>
+<table id = "tbl" width = "100%">
+	<tr id = "0">
+		<th>No</th>
+		<th>Book</th>
+        <th>Author</th>
+        <th>Unit Price</th>        
+        <th>Quantity</th>        
+        <th>Total Price</th>        
+        <th><button id = "add">Add</button></th>        
+    </tr>
+	
+	
+</table> 
+<table id = "tbl1" width = "100%" style = "display : none">
+	<tr id = "0">
+		<th>No</th>
+		<th>Book</th>
+        <th>Author</th>
+        <th>Unit Price</th>        
+        <th>Quantity</th>        
+        <th>Total Price</th>        
+              
+    </tr>
+	
+	
+</table> 
+
+<div style = "width : 100%">
+<p style = "width : 10%; float : left">total : <p id="total" style = "width : 40%; float : left"></p></p>
+<button style = "width : 30% ; float : left ; display : none" id = "bill" >generate bill</button>
+</div>
+
+</body>
+</html>
